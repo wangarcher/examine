@@ -1,1 +1,0 @@
-/usr/bin/c++  -g  -rdynamic CMakeFiles/create_memo.dir/create_memo.cpp.o  -o create_memo 
