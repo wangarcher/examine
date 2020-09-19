@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/erase_memo.dir/erase_memo.cpp.o  -o erase_memo 

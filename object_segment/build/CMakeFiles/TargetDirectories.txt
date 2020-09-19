@@ -1,0 +1,3 @@
+/home/archer/Desktop/object_segment/build/CMakeFiles/rebuild_cache.dir
+/home/archer/Desktop/object_segment/build/CMakeFiles/object_segment.dir
+/home/archer/Desktop/object_segment/build/CMakeFiles/edit_cache.dir

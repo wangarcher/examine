@@ -1,0 +1,5 @@
+/home/archer/Desktop/share_memory/build/CMakeFiles/edit_cache.dir
+/home/archer/Desktop/share_memory/build/CMakeFiles/erase_memo.dir
+/home/archer/Desktop/share_memory/build/CMakeFiles/rebuild_cache.dir
+/home/archer/Desktop/share_memory/build/CMakeFiles/create_memo.dir
+/home/archer/Desktop/share_memory/build/CMakeFiles/visit_memo.dir

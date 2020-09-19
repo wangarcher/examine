@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/archer/Desktop/share_memory/erase_memo.cpp
+stdio.h
+-
+string.h
+-
+sys/ipc.h
+-
+sys/shm.h
+-
+stdlib.h
+-
+
