@@ -1,4 +1,0 @@
-/home/archer/Desktop/examine/cloud_align/build/CMakeFiles/rebuild_cache.dir
-/home/archer/Desktop/examine/cloud_align/build/CMakeFiles/cloud_align.dir
-/home/archer/Desktop/examine/cloud_align/build/CMakeFiles/edit_cache.dir
-/home/archer/Desktop/examine/cloud_align/build/CMakeFiles/cloud_align_autogen.dir
