@@ -12,7 +12,7 @@ Scenario: localization and loop detection
 
 #define _CP_QUAD_TREE_H_
 
-#define MAX_ELE_NUM 20
+#define MAX_ELE_NUM 30
 
 #define QUADRANT_RU 1
 #define QUADRANT_LU 2

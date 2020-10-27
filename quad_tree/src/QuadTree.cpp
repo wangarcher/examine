@@ -148,8 +148,13 @@ struct QuadTreeNode *createChildNode(struct QuadTreeNode *node, float bottom, fl
     return childNode;
 }
 
-void combineNode(struct QuadTreeNode *node)  //not finished
+void combineNode(struct QuadTreeNode *node)  //TODO further test needed
 {
+    if (node->RU->is_leaf == 0) combineNode(node->RU);
+    if (node->LU->is_leaf == 0) combineNode(node->LU);
+    if (node->RB->is_leaf == 0) combineNode(node->RB);
+    if (node->LB->is_leaf == 0) combineNode(node->LB);
+
     if (node->RU->is_leaf && node->LU->is_leaf && node->RB->is_leaf && node->LB->is_leaf)
     {
         if (node->RU->ele_num + node->LU->ele_num + node->RB->ele_num + node->LB->ele_num < 20)
@@ -193,14 +198,10 @@ void combineNode(struct QuadTreeNode *node)  //not finished
             free(node->LB);
         }
     }
-    if (node->RU->is_leaf == 0) combineNode(node->RU);
-    if (node->LU->is_leaf == 0) combineNode(node->LU);
-    if (node->RB->is_leaf == 0) combineNode(node->RB);
-    if (node->LB->is_leaf == 0) combineNode(node->LB);
     return;
 }
 
-void deleteEle(struct QuadTreeNode *node, struct ElePoint old_ele)    //TODO test needed, A
+void deleteEle(struct QuadTreeNode *node, struct ElePoint old_ele)
 {
     if (node->is_leaf == 1) 
     {
@@ -209,6 +210,7 @@ void deleteEle(struct QuadTreeNode *node, struct ElePoint old_ele)    //TODO tes
         {
             if (old_ele.index == node->ele_list[j]->index) detect_index = j;
         }
+        free(node->ele_list[detect_index]);
         cout << "detect_index: " << detect_index << endl;
         for (int k = detect_index; k < node->ele_num-1; k++)
         {
@@ -334,7 +336,7 @@ int main()
     old_ele.index = 280;
     deleteEle(&root, old_ele);
 
-
+    combineNode(&root);
 
     float x = -36.0;
     float y = -10.0;
