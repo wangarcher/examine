@@ -1,3 +1,0 @@
-/home/ping/zzw/10_21/goujizi/Localization/QuadTree/build/CMakeFiles/rebuild_cache.dir
-/home/ping/zzw/10_21/goujizi/Localization/QuadTree/build/CMakeFiles/quad_tree.dir
-/home/ping/zzw/10_21/goujizi/Localization/QuadTree/build/CMakeFiles/edit_cache.dir
