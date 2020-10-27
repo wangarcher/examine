@@ -200,46 +200,45 @@ void combineNode(struct QuadTreeNode *node)  //not finished
     return;
 }
 
-void deleteEle(struct QuadTreeNode node, struct ElePoint old_ele)    //TODO test needed, A
+void deleteEle(struct QuadTreeNode *node, struct ElePoint old_ele)    //TODO test needed, A
 {
-    if (node.is_leaf == 1) 
+    if (node->is_leaf == 1) 
     {
-        for (int j = 0; j < node.ele_num; j++) 
+        int detect_index = -1;
+        for (int j = 0; j < node->ele_num; j++) 
         {
-            if (old_ele.index == node.ele_list[j]->index)
-            {
-                free(node.ele_list[j]);
-                for (int bp = j; bp < node.ele_num-1; bp++)
-                {
-                    node.ele_list[bp] = node.ele_list[bp+1];
-                }
-                node.ele_num--;
-            }
+            if (old_ele.index == node->ele_list[j]->index) detect_index = j;
         }
+        cout << "detect_index: " << detect_index << endl;
+        for (int k = detect_index; k < node->ele_num-1; k++)
+        {
+            node->ele_list[k] = node->ele_list[k+1]; 
+        }
+        node->ele_num--;
         return;
     }
-    float mid_vertical = (node.region.up + node.region.bottom) / 2;
-    float mid_horizontal = (node.region.left + node.region.right) / 2;
+    float mid_vertical = (node->region.up + node->region.bottom) / 2;
+    float mid_horizontal = (node->region.left + node->region.right) / 2;
     if (old_ele.y > mid_vertical) 
     {
         if (old_ele.x > mid_horizontal) 
         {
-            deleteEle(*node.RU, old_ele);
+            deleteEle(node->RU, old_ele);
         } 
         else 
         {
-            deleteEle(*node.LU, old_ele);
+            deleteEle(node->LU, old_ele);
         }
     } 
     else 
     {
         if (old_ele.x > mid_horizontal) 
         {
-            deleteEle(*node.RB, old_ele);
+            deleteEle(node->RB, old_ele);
         } 
         else 
         {
-            deleteEle(*node.LB, old_ele);
+            deleteEle(node->LB, old_ele);
         }
     }
 }
@@ -253,7 +252,7 @@ void queryEle(struct QuadTreeNode node, struct ElePoint ele, float pose[][3], in
     {
         for (int j = 0; j < node.ele_num; j++) 
         {
-            cout << "suibianxiajibashuchudiandongxi: " << node.ele_list[j]->x << ", " << node.ele_list[j]->y << endl;
+            cout << "candidate: " << node.ele_list[j]->x << ", " << node.ele_list[j]->y << endl;
             pose[count][0] = node.ele_list[j]->x;
             pose[count][1] = node.ele_list[j]->y;
             pose[count][2] = node.ele_list[j]->index;
@@ -325,7 +324,7 @@ int main()
         ele.x = queue_x;
         ele.y = queue_y;
         ele.index = queue_i;
-        cout << "x_in: " << ele.x << ", y_in: " << ele.y << ", index_in:"<< ele.index << endl;
+        //cout << "x_in: " << ele.x << ", y_in: " << ele.y << ", index_in:"<< ele.index << endl;
         insertEle(&root, ele);
         if(!fin.good()) break;
     }
@@ -333,8 +332,7 @@ int main()
     old_ele.x = -36.2755;
     old_ele.y = -10.2603;
     old_ele.index = 280;
-
-    deleteEle(root, old_ele);
+    deleteEle(&root, old_ele);
 
 
 
