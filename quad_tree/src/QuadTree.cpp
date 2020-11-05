@@ -34,34 +34,6 @@ Scenario: localization and loop detection
 using namespace std;
 
 
-typedef struct _SendDataPack
-{
-    int index;
-    float x;
-    float y;
-    float z; 
-    float roll;
-    float pitch;
-    float yaw;
-}SendDataPack;
-
-typedef struct _RecvDataPack
-{
-    float x;
-    float y;
-    float z;
-    float roll;
-    float pitch;
-    float yaw;
-}RecvDataPack;
-
-
-struct Posexyi
-{
-    float x;
-    float y;
-    int index;
-};
 
 //A func to insert the elements(frames) into the quadtree grid
 void insertEle(struct QuadTreeNode *node, struct ElePoint ele) 
@@ -128,11 +100,13 @@ void splitNode(struct QuadTreeNode *node)
     node->RB = createChildNode(node, node->region.bottom, mid_vertical, mid_horizontal, node->region.right);
     node->LB = createChildNode(node, node->region.bottom, mid_vertical, node->region.left, mid_horizontal);
 
-    for (int i = 0; i < node->ele_num; i++) {
+    for (int i = 0; i < node->ele_num; i++)
+    {
         insertEle(node, *node->ele_list[i]);
         free(node->ele_list[i]);
-        node->ele_num--;
+        //node->ele_num--;
     }
+    node->ele_num = 0;
 }
 
 
@@ -157,7 +131,7 @@ void combineNode(struct QuadTreeNode *node)  //TODO further test needed
 
     if (node->RU->is_leaf && node->LU->is_leaf && node->RB->is_leaf && node->LB->is_leaf)
     {
-        if (node->RU->ele_num + node->LU->ele_num + node->RB->ele_num + node->LB->ele_num < 20)
+        if (node->RU->ele_num + node->LU->ele_num + node->RB->ele_num + node->LB->ele_num < MAX_ELE_NUM)
         {
             for (int h = 0; h < node->RU->ele_num; h++) 
             {
@@ -254,12 +228,11 @@ void queryEle(struct QuadTreeNode node, struct ElePoint ele, float pose[][3], in
     {
         for (int j = 0; j < node.ele_num; j++) 
         {
-            cout << "candidate: " << node.ele_list[j]->x << ", " << node.ele_list[j]->y << endl;
             pose[count][0] = node.ele_list[j]->x;
             pose[count][1] = node.ele_list[j]->y;
             pose[count][2] = node.ele_list[j]->index;
             count++;
-            pose[MAX_ELE_NUM*9-1][0] = count;
+            pose[MAX_ELE_NUM*9][0] = count;
         }
         return;
     }
@@ -314,58 +287,59 @@ int main()
     struct Region root_region;
     struct ElePoint ele;
     struct ElePoint old_ele; 
-    initRegion(&root_region, - 50, 100, -50, 100);
+    initRegion(&root_region, -40, 40, -40, 40);
     initNode(&root, 1, root_region);
 
     ifstream fin("../pose.txt");
     while(!fin.eof())
     {
+        if(!fin.good()) break;
         int queue_i;
         float queue_x, queue_y, queue_z, queue_yaw, queue_pitch, queue_roll;
-        fin >> queue_i >> queue_yaw >> queue_pitch >> queue_roll >> queue_x >> queue_y >> queue_z;
+        fin >> queue_i >> queue_x >> queue_y >> queue_z >> queue_yaw >> queue_pitch >> queue_roll;
         ele.x = queue_x;
         ele.y = queue_y;
         ele.index = queue_i;
-        //cout << "x_in: " << ele.x << ", y_in: " << ele.y << ", index_in:"<< ele.index << endl;
+        cout << "ele.x: " << ele.x << " , ele.y: " << ele.y << " , ele.index: " << ele.index <<  endl;
         insertEle(&root, ele);
-        if(!fin.good()) break;
     }
 
-    old_ele.x = -36.2755;
-    old_ele.y = -10.2603;
-    old_ele.index = 280;
-    deleteEle(&root, old_ele);
+    //old_ele.x = 0.40;
+    //old_ele.y = 0.40;
+    //old_ele.index = 280;
+    //deleteEle(&root, old_ele);
 
-    combineNode(&root);
+    //combineNode(&root);
 
-    float x = -36.0;
-    float y = -10.0;
-    float d = 0.4;
-    float disturbance[9][2] = {{d, 0}, {d, d}, {0, d}, {0, 0}, {-d, d}, {-d, 0}, {-d, -d}, {0, -d}, {d, -d}};
-    float pose[MAX_ELE_NUM*9][3] = {0};
+    float x = 15;
+    float y = 1;
+    float d = 3.5;
+    float disturbance[9][2] = {{0, 0}, {d, 0}, {d, d}, {0, d}, {-d, d}, {-d, 0}, {-d, -d}, {0, -d}, {d, -d}};
+    float candidate[MAX_ELE_NUM*9+1][3] = {0};
     for(int i = 0; i < 9; i++)
     {   
         struct ElePoint test;
         test.x = x  + disturbance[i][0];
         test.y = y  + disturbance[i][1];
-        queryEle(root, test, pose, pose[MAX_ELE_NUM*9-1][0]);  
+        queryEle(root, test, candidate, candidate[MAX_ELE_NUM*9][0]);  
     }
 
     float min_distance = 1000;
     float distance = 0;
     float found_x, found_y;
-    int found_index = 0;
-    for(int k = 0; k < pose[MAX_ELE_NUM*9-1][0]; k++)
+    int found_index = -1;
+    for(int k = 0; k < candidate[MAX_ELE_NUM*9][0]; k++)
     {
-        distance = hypot(x - pose[k][0], y - pose[k][1]);
+        distance = hypot(x - candidate[k][0], y - candidate[k][1]);
+        cout << "candidate_index: " << candidate[k][2] << ", distance: " << distance <<  endl; 
         //1. to eradicate the keyframes on the time-related sequence 
         //2. to find the closest point to the determined pose
         if(distance < min_distance)
         {
             min_distance = distance;
-            found_x = pose[k][0];
-            found_y = pose[k][1];
-            found_index = pose[k][2];
+            found_x = candidate[k][0];
+            found_y = candidate[k][1];
+            found_index = candidate[k][2];
         } 
     }
     cout << "found_x: " << found_x << ", found_y: " << found_y << ", found_index: " << found_index << endl;
