@@ -1,1 +1,0 @@
-g++    -rdynamic CMakeFiles/quad_tree.dir/src/QuadTree.cpp.o  -o quad_tree -lboost_thread -lpthread -ldbus-1 -g 

@@ -1,3 +1,0 @@
-/home/archer/Desktop/examine/quad_tree/build/CMakeFiles/rebuild_cache.dir
-/home/archer/Desktop/examine/quad_tree/build/CMakeFiles/quad_tree.dir
-/home/archer/Desktop/examine/quad_tree/build/CMakeFiles/edit_cache.dir
