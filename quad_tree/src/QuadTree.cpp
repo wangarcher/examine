@@ -287,7 +287,7 @@ int main()
     struct Region root_region;
     struct ElePoint ele;
     struct ElePoint old_ele; 
-    initRegion(&root_region, -40, 40, -40, 40);
+    initRegion(&root_region, -30, 40, -30, 40);
     initNode(&root, 1, root_region);
 
     ifstream fin("../pose.txt");
