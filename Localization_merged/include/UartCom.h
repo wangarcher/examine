@@ -9,7 +9,7 @@ union chartofloat
 
 union chtosh
 {
-    unsigned short sh;
+    short sh;
     unsigned char ch[2];
 };
 

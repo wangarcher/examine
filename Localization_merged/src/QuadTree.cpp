@@ -139,17 +139,17 @@ void combineNode(struct QuadTreeNode *node)
 
 //A func to find the element near the current pose
 //making attempts to find the closest grid and find the elements in that grid
-void queryEle(struct QuadTreeNode node, struct ElePoint ele, float pose[][3], int count) 
+void queryEle(struct QuadTreeNode node, struct ElePoint ele, float candidate[][3], int count) 
 {
     if (node.is_leaf == 1) 
     {
         for (int j = 0; j < node.ele_num; j++) 
         {
-            pose[count][0] = node.ele_list[j]->x;
-            pose[count][1] = node.ele_list[j]->y;
-            pose[count][2] = node.ele_list[j]->index;
+            candidate[count][0] = node.ele_list[j]->x;
+            candidate[count][1] = node.ele_list[j]->y;
+            candidate[count][2] = node.ele_list[j]->index;
             count++;
-            pose[MAX_ELE_NUM*9-1][0] = count;
+            candidate[MAX_ELE_NUM*9][0] = count;
         }
         return;
     }
@@ -160,22 +160,22 @@ void queryEle(struct QuadTreeNode node, struct ElePoint ele, float pose[][3], in
     {
         if (ele.x > mid_horizontal) 
         {
-            queryEle(*node.RU, ele, pose, count);
+            queryEle(*node.RU, ele, candidate, count);
         } 
         else 
         {
-            queryEle(*node.LU, ele, pose, count);
+            queryEle(*node.LU, ele, candidate, count);
         }
     } 
     else 
     {
         if (ele.x > mid_horizontal) 
         {
-            queryEle(*node.RB, ele, pose, count);
+            queryEle(*node.RB, ele, candidate, count);
         } 
         else 
         {
-            queryEle(*node.LB, ele, pose, count);
+            queryEle(*node.LB, ele, candidate, count);
         }
     }
 }

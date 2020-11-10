@@ -116,17 +116,17 @@ void* ImuData::ReadImuData(void *arg)
             for(int idx = 0; idx < 4; idx++)
             cti.ch[idx] = imuDataBuf[imuDataStartFlagIdx+2+idx];
 
-            X_GYRO_OUT = cti.fl * 3.1415 / 360;
+            X_GYRO_OUT = cti.fl / 57.3;
 
             for(int idx = 0; idx < 4; idx++)
             cti.ch[idx] = imuDataBuf[imuDataStartFlagIdx + 6 + idx];
 
-            Y_GYRO_OUT = cti.fl * 3.1415 / 360;
+            Y_GYRO_OUT = cti.fl / 57.3;
 
             for(int idx = 0; idx < 4; idx++)
             cti.ch[idx] = imuDataBuf[imuDataStartFlagIdx + 10 + idx];
 
-            Z_GYRO_OUT = cti.fl * 3.1415 / 360;
+            Z_GYRO_OUT = cti.fl / 57.3;
 
             for(int idx = 0; idx < 4; idx++)
             cti.ch[idx] = imuDataBuf[imuDataStartFlagIdx + 14 + idx];
@@ -179,12 +179,12 @@ void* ImuData::ReadImuData(void *arg)
             //(3)IMU航迹推测
             //(4)验证数据是否正确
             imu.SetImuData(X_ACCL_OUT,Y_ACCL_OUT,Z_ACCL_OUT,X_GYRO_OUT,Y_GYRO_OUT,Z_GYRO_OUT);  
-            //imu.ImuUpdate(X_GYRO_OUT, Y_GYRO_OUT, Z_GYRO_OUT, X_ACCL_OUT, Y_ACCL_OUT, Z_ACCL_OUT);
-            //imu.ImuTrackDeduction();
+            imu.ImuUpdate(X_GYRO_OUT, Y_GYRO_OUT, Z_GYRO_OUT, X_ACCL_OUT, Y_ACCL_OUT, Z_ACCL_OUT);
+            imu.ImuTrackDeduction();
 
-		    //imu.GetPostureYPR(postureTmp.Pitch, postureTmp.Roll, postureTmp.Yaw);
-		    //imu.GetPosition(positionTmp.x,positionTmp.y,positionTmp.theta);
-		    //imu.GetSpeed(speedTmp.vx,speedTmp.vy,speedTmp.w);
+		    imu.GetPostureYPR(postureTmp.Pitch, postureTmp.Roll, postureTmp.Yaw);
+		    imu.GetPosition(positionTmp.x,positionTmp.y,positionTmp.theta);
+		    imu.GetSpeed(speedTmp.vx,speedTmp.vy,speedTmp.w);
 
          //  std::cout<<"***************Position****************"<<std::endl;
         //    std::cout<<"position_cout.x="<<positionTmp.x<<std::endl;

@@ -12,7 +12,7 @@ Scenario: localization and loop detection
 
 #define _CP_QUAD_TREE_H_
 
-#define MAX_ELE_NUM 30
+#define MAX_ELE_NUM 40
 
 #define QUADRANT_RU 1
 #define QUADRANT_LU 2
@@ -55,9 +55,9 @@ void splitNode(struct QuadTreeNode *node);
 
 void combineNode(struct QuadTreeNode *node);
 
-void queryEle(struct QuadTreeNode node, struct ElePoint ele, float pose[][3], int count);
+void queryEle(struct QuadTreeNode node, struct ElePoint ele, float candidate[][3], int count);
 
-void initRegion(struct Region *region, float up, float bottom, float left, float right);
+void initRegion(struct Region *region, float bottom, float up, float left, float right);
 
 struct QuadTreeNode *createChildNode(struct QuadTreeNode *node, float bottom, float up, float left, float right);
 #endif

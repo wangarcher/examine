@@ -56,9 +56,8 @@ void OdomData::ClearOdomData()
 
 void OdomData::ParsingOdomData(int rightEncDt_, int leftEncDt_)
 {
-    this->SetRightAndLeftEncDt(rightEncDt_, leftEncDt_);
-    this->SetDistanceRightAndLeft();
-    this->SetDistanceAndTheta();
+    this->aveDistance = ((rightEncDt_ + leftEncDt_) / 60.0 * 3.1415926 * 0.128 / 10 ) /2.0 ;
+    this->theta = ((rightEncDt_ - leftEncDt_) / 60.0 * 3.1415926 * 0.128 / 10 ) / WHEELDIST; //通过
     this->SetSpeed();
     this->OdomDeadReackoning();
 }
@@ -74,15 +73,15 @@ void OdomData::OdomDeadReackoning()
   //  imu.GetPostureYPR(Pitch, Roll, Yaw);
   //  Yaw/=57.3;
 
-    delta_x = delta_distance * cos(theta + delta_theta/2.0);
-    delta_y = delta_distance * sin(theta + delta_theta/2.0);
+    delta_x = delta_distance * cos(theta + delta_theta);
+    delta_y = delta_distance * sin(theta + delta_theta);
     
 
     //delta_x = delta_distance * cos(theta + Yaw/2.0);
    // delta_y = delta_distance * sin(theta + Yaw/2.0);
     x = x + delta_x;
     y = y + delta_y;
-    theta = theta + delta_theta/2.0;
+    theta = theta + delta_theta;
     odom.SetPos(x, y, theta);
 }
 
@@ -107,10 +106,10 @@ void* OdomData::ReadOdomData(void* arg)
 		{
 		    cts.ch[0] = frame.data[2];
 		    cts.ch[1] = frame.data[3];
-		    leftCnt = cts.sh-128;
+		    leftCnt = cts.sh;
 		    cts.ch[0] = frame.data[4];
 		    cts.ch[1] = frame.data[5];
-		    rightCnt = cts.sh-128;
+		    rightCnt = cts.sh;
 			
 		   // odom.ClearOdomData();
             odom.ParsingOdomData(rightCnt, leftCnt);
@@ -244,8 +243,8 @@ void OdomData::SetSpeed()
 	//std::cout<<"ODOM  DeltaTime="<<DeltaTime<<std::endl;
    // this->vSpeed = this->aveDistance / ( DeltaTime /1000.0);
     //this->wSpeed = this->theta / ( DeltaTime /1000.0);
-    this->vSpeed = this->aveDistance / ((float)dt/1000000.0);
-    this->wSpeed = this->theta / ((float)dt/1000000.0);
+    this->vSpeed = this->aveDistance;
+    this->wSpeed = this->theta;
 }
 
 void OdomData::GetSpeed(float &vSpeed_, float &wSpeed_)

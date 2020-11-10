@@ -6,8 +6,8 @@
 
 #define PI 3.1415926
 
-#define D         0.385
-#define WHEELDIST 0.70
+#define D         0.128
+#define WHEELDIST 0.44
 
 typedef struct 
 {

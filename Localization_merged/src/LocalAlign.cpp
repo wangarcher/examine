@@ -159,7 +159,7 @@ int main(int argc, char** argv)
     struct Region root_region;
     struct ElePoint ele;
     struct ElePoint old_ele; 
-    initRegion(&root_region, - 50, 100, -50, 100);
+    initRegion(&root_region, -50, 100, -50, 100);
     initNode(&root, 1, root_region);
 
     std::vector<std::vector<float>> data3d;
@@ -173,10 +173,11 @@ int main(int argc, char** argv)
     while(!fin.eof())
     {
         fin >> line >> x >> y >> z >> yaw >> pitch >> roll;
-        cout << " Checking No. " << line << " Pose." << endl;
+        cout << "Checking No. " << line << " Pose." << endl;
         six2Trans(roll, pitch, yaw, x, y, z, GlobalTransform);
         Posemat a;
         a.global_transform = GlobalTransform;
+        cout << "global: \n" << GlobalTransform << endl; 
         Pose.push_back(a);
         ele.x = x;
         ele.y = y;
@@ -251,38 +252,36 @@ int main(int argc, char** argv)
         float x_now, y_now, z_now, roll_now, pitch_now, yaw_now, v_now, w_now;
         x_now = y_now = z_now = roll_now = pitch_now = yaw_now = v_now = w_now = 0; 
         PriorLocation(x_now, y_now, z_now, roll_now, pitch_now, yaw_now, v_now, w_now);
-        float d = 0.4;
-        float disturbance[9][2] = {{d, 0}, {d, d}, {0, d}, {0, 0}, {-d, d}, {-d, 0}, {-d, -d}, {0, -d}, {d, -d}};
-        float pose[MAX_ELE_NUM*9][3] = {0};
+        //float d = 1;
+        //float disturbance[9][2] = {{d, 0}, {d, d}, {0, d}, {0, 0}, {-d, d}, {-d, 0}, {-d, -d}, {0, -d}, {d, -d}};
+        float candidate[MAX_ELE_NUM*9 + 1][3] = {0};
         float min_distance = 1000;
         float distance = 0;
-        float found_x, found_y;
         int found_index = -1;
         
         //find possible index
-        for(int i = 0; i < 9; i++)
-        {   
+        //for(int i = 0; i < 9; i++)
+        //{   
             struct ElePoint test;
-            test.x = x_now  + disturbance[i][0];
-            test.y = y_now  + disturbance[i][1];
-            queryEle(root, test, pose, pose[MAX_ELE_NUM*9-1][0]);  
-        }
+            test.x = x_now;// + disturbance[i][0];
+            test.y = y_now; // + disturbance[i][1];
+            queryEle(root, test, candidate, candidate[MAX_ELE_NUM*9][0]);  
+        //}
 
         //find closest index
-        for(int k = 0; k < pose[MAX_ELE_NUM*9-1][0]; k++)
+        for(int k = 0; k < candidate[MAX_ELE_NUM*9][0]; k++)
         {
-            distance = hypot(x_now - pose[k][0], y_now - pose[k][1]);
+            distance = hypot(x_now - candidate[k][0], y_now - candidate[k][1]);
+            //cout << "candidate_index: " << candidate[k][2] << " , distance: " << distance << endl;
             //1. to eradicate the keyframes on the time-related sequence 
             //2. to find the closest point to the determined pose
             if(distance < min_distance)
             {
                 min_distance = distance;
-                found_x = pose[k][0];
-                found_y = pose[k][1];
-                found_index = pose[k][2];
+                found_index = candidate[k][2];
             } 
         }
-
+        cout << "found_index: " << found_index << " , mindistance: " << min_distance << endl;
         //pseudo mat    
         Eigen::Matrix4f globalTransform_curr = Eigen::Matrix4f::Identity(); // for the result store
         Eigen::Matrix4f pairTransform        = Eigen::Matrix4f::Identity();
@@ -293,8 +292,7 @@ int main(int argc, char** argv)
 
         cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
         cout << "x: " << x_now << ", y: " <<  y_now  << ", yaw: "<< yaw_now << endl;
-        six2Trans(roll_now, pitch_now, yaw_now,
-                  x_now, y_now, z_now, priorTransform); 
+        six2Trans(roll_now, pitch_now, yaw_now, x_now, y_now, z_now, priorTransform); 
   
         cout << "prior: \n" << priorTransform << endl;
         cout << "keyframe: \n" << Pose[found_index].global_transform << endl;
@@ -338,6 +336,3 @@ int main(int argc, char** argv)
     DestoryLocalizate();
     return 0;
 }
-
-
-
