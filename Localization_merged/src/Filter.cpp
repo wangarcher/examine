@@ -82,9 +82,9 @@ void KalmanFilter::Initialization()
     //measurement covariance matrix
     // R is provided by Sensor supplier
     Eigen::MatrixXf R_in(3,3);
-    R_in << 0.1, 0.0,0.0,
-            0.0, 0.1,0.0,
-            0.0, 0.0,0.1;
+    R_in << 0.1, 0.0, 0.0,
+            0.0, 0.1, 0.0,
+            0.0, 0.0, 0.1;
     SetR(R_in);
 
 

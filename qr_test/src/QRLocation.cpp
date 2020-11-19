@@ -33,12 +33,13 @@ bool QRLocation::getQRPose(QRPose_t* qrPose)
     if(!grayFrame)
         grayFrame=cvCreateImage(cvGetSize(frame),IPL_DEPTH_8U,1);
     //原图转灰度图
-    cvCvtColor(frame,grayFrame,CV_BGR2GRAY);
+    //cvCvtColor(frame,grayFrame,CV_BGR2GRAY);
+    grayFrame = frame;
     //如果开启调试，则显示灰度图
     if(debugUI)
     {
         cvShowImage(QRLOCATION_DEBUGUI_TITLE,grayFrame);
-        cvWaitKey(50);
+        cvWaitKey(15);
     }
     //创建zbar图像
     Image image(frame->width,frame->height,"Y800",grayFrame->imageData,frame->width*frame->height);
