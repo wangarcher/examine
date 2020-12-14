@@ -8,6 +8,7 @@ ZK<X>,<Y>,<yaw>
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
 #include <zbar.h>
 
 //tilt threshold 
@@ -52,6 +53,8 @@ private:
     bool debugUI;
     //gray frame
     IplImage* grayFrame;
+    IplImage* grayFrame2;
+    cv::Mat img;
     //img scanner
     zbar::ImageScanner scanner;
 

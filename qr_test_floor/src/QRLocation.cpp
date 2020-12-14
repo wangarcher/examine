@@ -5,9 +5,11 @@
 
 using namespace std;
 using namespace zbar;
+using namespace cv;
 
 float qrSize = 0.174;
-
+//Mat cameraMatrix = (cv::Mat_<float>(3, 3) << 584.316, 0, 0, 2.0289, 584.500,0,  0, 0, 1);;
+//Mat distCoeffs = (cv::Mat_<float>(1, 5) <<  -0.3731, 0.256, 0.256, 0.0008, 0.0014);
 
 bool QRLocation::init(int webcamIndex, float hViewAngle, float wViewAngle, bool debugUI)
 {
@@ -34,10 +36,16 @@ bool QRLocation::getQRPose(QRPose_t* qrPose)
     if(!grayFrame)
         grayFrame=cvCreateImage(cvGetSize(frame),IPL_DEPTH_8U,1);
     cvCvtColor(frame,grayFrame,CV_BGR2GRAY);
+    //img = cvarrToMat(frame);
+    //Mat show;
+    //undistort(img, show, cameraMatrix, distCoeffs);
+    //IplImage pBinary = IplImage(show);
+    //grayFrame2 = cvCloneImage(&pBinary);
     if(debugUI)
     {
         cvShowImage(QRLOCATION_DEBUGUI_TITLE,grayFrame);
-        cvWaitKey(50);
+        //cvShowImage("final input", grayFrame2);
+        cvWaitKey(5);
     }
     //create zbar img
     Image image(frame->width,frame->height,"Y800",grayFrame->imageData,frame->width*frame->height);
@@ -92,17 +100,21 @@ bool QRLocation::getQRPose(Image::SymbolIterator symbol, float qrSize, QRPose_t*
     float y2=symbol->get_location_y(2);
     float x3=symbol->get_location_x(3);
     float y3=symbol->get_location_y(3);
+    cout << "Point A: " << x0 << ", " << y0 << "\n"
+         << "Point B: " << x1 << ", " << y1 << "\n"
+         << "Point C: " << x2 << ", " << y2 << "\n"
+         << "Point D: " << x3 << ", " << y3 <<  endl;
 
     //left height of the qrcode
-    float leftH=y1-y0;
+    float yB_A=y1-y0;
     //right height of the qrcode
-    float rightH=y2-y3;
+    float yC_D=y2-y3;
     //make sure the qrcode was well placed
 
     //left width of the qrcode
-    float leftW=x1-x0;
+    float xB_A=x1-x0;
     //right width of the qrcode
-    float rightW=x2-x3;
+    float xC_D=x2-x3;
     //make sure the qrcode was well placed
 
     //half view angle tangent value
@@ -110,37 +122,88 @@ bool QRLocation::getQRPose(Image::SymbolIterator symbol, float qrSize, QRPose_t*
     float tanh = tan(hViewAngle/2);
 
     float k1 = (y2-y0)/(x2-x0);
-    float b1 = (x2*y0-x0*y2)/(x2-x0);
+    float b1 = y0 - k1*x0;
     float k2 = (y3-y1)/(x3-x1);
-    float b2 = (x3*y1-x1*y3)/(x3-x1);
-    float crossX = -(b1-b2)/(k1-k2);
+    float b2 = y1 - k2*x1;
+    float crossX = (b1-b2)/(k2-k1);
     float crossY = crossX * k2 + b2;
     float centreX = grayFrame->width/2;
     float centreY = grayFrame->height/2;
 
     float relateY = (crossX - centreX) / grayFrame->width * tanw * QRLOCATION_CAM_HEIGHT  * 2;
     float relateX = (crossY - centreY) / grayFrame->height * tanh * QRLOCATION_CAM_HEIGHT * 2;
-    float leftT, rightT;
-    if(atan(leftH/leftW) > 0)
+    float leftT, rightT, relateT;
+    if(yB_A >= 0)
     {
-        leftT = atan(leftH/leftW) - 1.57;
+        if(xB_A > 0)
+        {
+            leftT = atan(yB_A/xB_A) - 1.57;
+        }
+        if(xB_A < 0)
+        {
+            leftT = atan(yB_A/xB_A) + 1.57;
+        }
+        if(xB_A == 0)
+        {
+            leftT = 0;
+        }
+    }
+    else    
+    {
+        if(xB_A > 0)
+        {
+            leftT = atan(yB_A/xB_A) - 1.57;
+        }
+        if(xB_A < 0)
+        {
+            leftT = atan(yB_A/xB_A) + 1.57;
+        }
+        if(xB_A == 0)
+        {
+            leftT = -3.14;
+        }
+    }
+    if(yC_D >= 0)
+    {
+        if(xC_D > 0)
+        {
+            rightT = atan(yC_D/xC_D) - 1.57;
+        }
+        if(xC_D < 0)
+        {
+            rightT = atan(yC_D/xC_D) + 1.57;
+        }
+        if(xC_D == 0)
+        {
+            rightT = 0;
+        }
     }
     else
     {
-        leftT = atan(leftH/leftW) + 1.57;
-    }
-    if(atan(rightH/rightW) > 0)
-    {
-        rightT = atan(rightH/rightW) - 1.57;
-    }
-    else
-    {
-        rightT = atan(rightH/rightW) + 1.57;
+        if(xC_D > 0)
+        {
+            rightT = atan(yC_D/xC_D) - 1.57;
+        }
+        if(xC_D < 0)
+        {
+            rightT = atan(yC_D/xC_D) + 1.57;
+        }
+        if(xC_D == 0)
+        {
+            rightT = -3.14;
+        }
     }
     cout << "leftT: "<< leftT <<  ", rightT: " << rightT << endl;
-    float relateT = (leftT + rightT) / 2;
-    qrPose->relateX = relateX;
-    qrPose->relateY = relateY;
+    if(abs(leftT-rightT) > 1)
+    {
+        relateT = -abs(leftT);
+    }
+    else
+    {
+        relateT = (leftT + rightT) / 2;
+    }
+    qrPose->relateX = relateX*cos(relateT) - relateY*sin(relateT);
+    qrPose->relateY = relateX*sin(relateT) + relateY*cos(relateT);  
     qrPose->relateT = relateT;
 
     return true;
