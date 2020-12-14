@@ -1,3 +1,0 @@
-/home/archer/Desktop/examine/qr_test_floor/build/CMakeFiles/rebuild_cache.dir
-/home/archer/Desktop/examine/qr_test_floor/build/CMakeFiles/QRLocation.dir
-/home/archer/Desktop/examine/qr_test_floor/build/CMakeFiles/edit_cache.dir
