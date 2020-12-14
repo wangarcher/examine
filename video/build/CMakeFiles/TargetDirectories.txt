@@ -1,3 +1,0 @@
-/home/archer/Desktop/examine/video/build/CMakeFiles/rebuild_cache.dir
-/home/archer/Desktop/examine/video/build/CMakeFiles/CameraShow.dir
-/home/archer/Desktop/examine/video/build/CMakeFiles/edit_cache.dir
