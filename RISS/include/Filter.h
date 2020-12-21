@@ -8,28 +8,6 @@
 #include "../include/Robot.h"
 #include "../include/Mtime.h"
 
-#define WEIGHT 1.0
-
-class  WeightingFilter
-{
-public:
-    /// constructor
-    WeightingFilter();
-    
-    /// destructor
-    ~WeightingFilter();
-
-    void initialize();
-
-    bool isInitialized();
-
-    void WeightingFilterUpdate();
-
-private:
-    bool odom_active_, imu_active_, vo_active_, gps_active_;
-    bool odom_used_, imu_used_, v0_used_, gps_used_;
-    bool odom_initializing_, imu_initializing_, vo_initializing_, gps_initializing_;
-};
 
 class KalmanFilter
 {
@@ -102,9 +80,6 @@ private:
     long int deltaTime_;
 
 };
-
-extern WeightingFilter weightingFilter;
-extern WeightingFilter* pweightingFilter;
 
 extern KalmanFilter kalmanFilter;
 extern KalmanFilter* pkalmanFilter;

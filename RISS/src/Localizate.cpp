@@ -22,7 +22,8 @@
 #include "../include/Imu.h"
 #include "../include/Odom.h"
 #include "../include/Mtime.h"
-#include "../include/Filter.h"
+//#include "../include/Filter.h"
+#include "../include/UKFilter.h"
 
 
 //线程锁
@@ -81,22 +82,21 @@ void RTLocation(void* arg)
 
     while(1)
     {
+        unscentedKalmanFilter.setNowTimeStamp(getSysTime());
 
-        kalmanFilter.setNowTimeStamp(getSysTime());
-
-        if(!kalmanFilter.GetIsInitialized()) //判断滤波器是否初始化
+        if(!unscentedKalmanFilter.GetIsInitialized()) //判断滤波器是否初始化
         {
-            kalmanFilter.Initialization();  
+            unscentedKalmanFilter.Initialization();  
             continue;     
         }
         
         long int lastTimeStamp, nowTimeStamp;
-        kalmanFilter.getLastTimeStamp(lastTimeStamp);
-        kalmanFilter.getNowTimeStamp(nowTimeStamp);
+        unscentedKalmanFilter.getLastTimeStamp(lastTimeStamp);
+        unscentedKalmanFilter.getNowTimeStamp(nowTimeStamp);
         long int deltaTime = nowTimeStamp - lastTimeStamp;
         float d_t =  deltaTime * 0.0001;
         std::cout << d_t << std::endl;
-        kalmanFilter.setLastTimeStamp(nowTimeStamp);
+        unscentedKalmanFilter.setLastTimeStamp(nowTimeStamp);
 
 
 
@@ -113,6 +113,7 @@ void RTLocation(void* arg)
         odom.GetSpeed(odom_v, odom_w);
         imu.GetGravityXYZ(imu_vx, imu_vy, imu_w);
         odom.GetPos(odom_x, odom_y, odom_null);
+
         std::cout << odom_v << ", " << odom_w  <<", " << imu_w << std::endl; 
         std::cout << odom_x << ", " << odom_y << std::endl;
 
@@ -120,11 +121,12 @@ void RTLocation(void* arg)
         Eigen::VectorXf z_in(3,1);
         z_in << odom_v, odom_w, imu_w;
 
-        kalmanFilter.Prediction(d_t);
-        kalmanFilter.KFUpdate(z_in);
+        unscentedKalmanFilter.StatePrediction(d_t);
+        unscentedKalmanFilter.MeasurementPrediction();
+        unscentedKalmanFilter.StateUpdate(z_in);
 
         Eigen::VectorXf x_out;
-        x_out = kalmanFilter.GetX();
+        x_out = unscentedKalmanFilter.GetX();
         robot_x = x_out[0];
         robot_y = x_out[1];
         robot_theta =  x_out[2];

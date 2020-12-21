@@ -11,9 +11,6 @@
 #include "../include/Imu.h"
 #include "../include/Gps.h"
 
-WeightingFilter weightingFilter;
-WeightingFilter* pweightingFilter;
-
 
 KalmanFilter kalmanFilter;
 KalmanFilter *pkalmanFilter;
@@ -212,7 +209,6 @@ void KalmanFilter::setLastTimeStamp(const long int lastTimeStamp)
 {
     this->lastTimeStamp_ = lastTimeStamp;
 }
-
 void KalmanFilter::setNowTimeStamp(const long int nowTimeStamp )
 {
     this->nowTimeStamp_ = nowTimeStamp;
@@ -221,7 +217,6 @@ void KalmanFilter::setDeltaTime(const long int deltaTime)
 {
     this->deltaTime_ = deltaTime;
 }
-
 void KalmanFilter::getLastTimeStamp(long int& lastTimeStamp)
 {
     lastTimeStamp = this->lastTimeStamp_;
@@ -234,43 +229,3 @@ void KalmanFilter::getDeltaTime(long int& deltaTime)
 {
     deltaTime = this->deltaTime_;
 }
-
-
-WeightingFilter::WeightingFilter()
-{
-
-}
-
-WeightingFilter::~WeightingFilter()
-{
-    delete pweightingFilter;
-}
-
-void WeightingFilter::WeightingFilterUpdate()  //只是进行位置融合
-{
-    float odom_x, odom_y, odom_theta;
-    float imu_x, imu_y, imu_z, imu_theta;
-    float Roll; //翻滚角
-    float Pitch; //俯仰角
-    float Yaw; //偏航角
-
-    odom.GetPos(odom_x, odom_y, odom_theta);
-    imu.GetPosition( imu_x, imu_y, imu_theta);
-
-    float robot_x, robot_y, robot_theta;
-
-    robot_x = WEIGHT * odom_x + (1- WEIGHT) * imu_x;
-    robot_y = WEIGHT * odom_y + (1- WEIGHT) * imu_y;
-    imu.GetPostureYPR(Roll, Pitch, Yaw);
-    robot_theta = Yaw/57.3;
-    
-    robot.SetRobotPosition(robot_x, robot_y, 0); 
-    robot.SetRobotRotation(Roll, Pitch, Yaw);
-    odom.SetPos(robot_x,robot_y,robot_theta);
-    imu.SetPosition(robot_x,robot_y,robot_theta);
-}
-
-
-
-
-

@@ -1,6 +1,7 @@
 #include "../include/QRLocation.h"
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 
 using namespace std;
@@ -9,6 +10,7 @@ float state_x, state_y, state_yaw;
 
 int main()
 {
+
     QRLocation qrLoc;
     if(!qrLoc.init(0, 0.82, 1.04, true))
         return 1;
