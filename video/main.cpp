@@ -13,11 +13,11 @@ int main()
     VideoCapture capture(0);
     capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
-    capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-    capture.set(CV_CAP_PROP_FPS, 15);
+    capture.set(CV_CAP_PROP_FPS, 30);
+    capture.set(CV_CAP_PROP_EXPOSURE, 100);
  
     //capture.set(CV_CAP_PROP_BRIGHTNESS, 1);//亮度 50
-    //capture.set(CV_CAP_PROP_CONTRAST, 40);//对比度 50
+    capture.set(CV_CAP_PROP_CONTRAST, 5);//对比度 50
     //capture.set(CV_CAP_PROP_SATURATION, 50);//饱和度 50
     //capture.set(CV_CAP_PROP_HUE, 50);//色调 0
     //capture.set(CV_CAP_PROP_EXPOSURE, 50);//曝光 -12
@@ -36,12 +36,8 @@ int main()
         Mat fz;
         Mat show;
         capture >> frame;
-        undistort(frame, show, cameraMatrix, distCoeffs);
         imshow("raw", frame);
-        waitKey(10);
-        imshow("corrected2",show);
-        waitKey(10);
-        printf("%d\n", time(NULL));
+        cvWaitKey(1);
     }
     return 0;
 }

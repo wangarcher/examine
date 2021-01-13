@@ -14,6 +14,9 @@ float qrSize = 0.174;
 bool QRLocation::init(int webcamIndex, float hViewAngle, float wViewAngle, bool debugUI)
 {
     capture=cvCreateCameraCapture(webcamIndex);
+    cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, 1280);
+    cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, 720);
+
     if(!capture)
         return false;
     this->hViewAngle = hViewAngle;
@@ -105,6 +108,18 @@ bool QRLocation::getQRPose(Image::SymbolIterator symbol, float qrSize, QRPose_t*
          << "Point C: " << x2 << ", " << y2 << "\n"
          << "Point D: " << x3 << ", " << y3 <<  endl;
 
+	vector<Point3f> corners(4);
+	vector<Point2f> corners_trans(4);
+	corners[0] = Point3f(540, 260, 0);
+    corners[1] = Point3f(740, 260, 0);
+	corners[2] = Point3f(540, 460, 0);
+	corners[3] = Point3f(740, 460, 0);
+    corners_trans[0] = Point2f(x0, y0);
+    corners_trans[1] = Point2f(x3, y3);
+    corners_trans[2] = Point2f(x1, y1);
+    corners_trans[3] = Point2f(x2, y2);
+	Mat transform = getPerspectiveTransform(corners,corners_trans);
+    cout << transform << endl;
     //left height of the qrcode
     float yB_A=y1-y0;
     //right height of the qrcode

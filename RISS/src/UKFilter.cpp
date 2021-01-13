@@ -69,6 +69,7 @@ void UnscentedKalmanFilter::Initialization()
 }
 
 //state prediction
+//state defination: x, y, v, yaw, w
 void UnscentedKalmanFilter::StatePrediction(float d_t)
 {
     Eigen::MatrixXf augmented_sigma = Eigen::MatrixXf::Zero(7, 15);
