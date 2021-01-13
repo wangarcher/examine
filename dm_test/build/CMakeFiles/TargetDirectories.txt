@@ -1,3 +1,0 @@
-/home/archer/Desktop/examine/dm_test/build/CMakeFiles/rebuild_cache.dir
-/home/archer/Desktop/examine/dm_test/build/CMakeFiles/DMLocation.dir
-/home/archer/Desktop/examine/dm_test/build/CMakeFiles/edit_cache.dir
