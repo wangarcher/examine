@@ -27,7 +27,7 @@ int main(void)
 		selfpoint origin;
 		origin.lat = latitude;
 		origin.lon = longitude;
-        sequence.push_back(origin);
+                sequence.push_back(origin);
 		count++;
     }
     char line_window[] = "fxxking line";
